@@ -1,0 +1,317 @@
+/* Bangladesh Tourism & Travel Management System - Master Tourism Palette (Ocean Blue + Sunset Coral + Sunshine Gold + Eco Green) */
+
+:root {
+    /* Ocean & Sky Trust Blues */
+    --ocean-950: #080E1E;
+    --ocean-900: #0E172F;
+    --ocean-800: #152244;
+    --ocean-700: #1F325E;
+    --ocean-blue: #0284C7;
+    --sky-cyan: #06B6D4;
+    --sky-light: #38BDF8;
+
+    /* Tropical Sunset & Coral Excitement */
+    --sunset-orange: #F27405;
+    --sunset-coral: #F25A38;
+    --sunset-rose: #E11D48;
+
+    /* Sunshine Gold Optimism & Loyalty */
+    --sun-gold: #F2B705;
+    --sun-amber: #F59E0B;
+    --sun-light: #FDE047;
+
+    /* Eco-Tourism Green & Nature */
+    --eco-green: #10B981;
+    --eco-emerald: #059669;
+    --eco-teal: #0D9488;
+
+    /* Border & Glass */
+    --border-glass: rgba(56, 189, 248, 0.18);
+    --border-warm: rgba(242, 116, 5, 0.25);
+}
+
+body {
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--ocean-950);
+    color: #F8FAFC;
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+    background: rgba(14, 23, 47, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+}
+
+.glass-panel-dark {
+    background: rgba(8, 14, 30, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+}
+
+.glass-nav {
+    background: rgba(8, 14, 30, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+/* Vibrant Multi-Tone Button Styles */
+.btn-sunset {
+    background: linear-gradient(135deg, #F27405 0%, #F25A38 100%);
+    color: #FFFFFF;
+    font-weight: 800;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-sunset:hover {
+    background: linear-gradient(135deg, #FF8924 0%, #FF6F4E 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(242, 116, 5, 0.45);
+}
+
+.btn-ocean {
+    background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%);
+    color: #FFFFFF;
+    font-weight: 800;
+    transition: all 0.3s ease;
+}
+.btn-ocean:hover {
+    background: linear-gradient(135deg, #0EA5E9 0%, #22D3EE 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(6, 182, 212, 0.45);
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #F2B705 0%, #F59E0B 100%);
+    color: #080E1E;
+    font-weight: 800;
+    transition: all 0.3s ease;
+}
+.btn-gold:hover {
+    background: linear-gradient(135deg, #FFD24D 0%, #FFA81A 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(242, 183, 5, 0.45);
+}
+
+.btn-eco {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: #FFFFFF;
+    font-weight: 800;
+    transition: all 0.3s ease;
+}
+.btn-eco:hover {
+    background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.45);
+}
+
+/* Category Badges */
+.badge-sunset {
+    background: rgba(242, 116, 5, 0.18);
+    border: 1px solid rgba(242, 116, 5, 0.45);
+    color: #FFA352;
+}
+
+.badge-coral {
+    background: rgba(242, 90, 56, 0.18);
+    border: 1px solid rgba(242, 90, 56, 0.45);
+    color: #FFA18A;
+}
+
+.badge-gold {
+    background: rgba(242, 183, 5, 0.18);
+    border: 1px solid rgba(242, 183, 5, 0.45);
+    color: #FDE047;
+}
+
+.badge-sky {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #7DD3FC;
+}
+
+.badge-eco {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6EE7B7;
+}
+
+/* Hero Background Slideshow */
+.hero-bg-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hero-bg-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 1.4s ease-in-out, transform 8s ease-out;
+}
+
+.hero-bg-slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 14, 30, 0.65) 0%, rgba(8, 14, 30, 0.82) 55%, rgba(8, 14, 30, 1) 100%);
+    z-index: 1;
+}
+
+/* Destination Spotlight Cards */
+.dest-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dest-card:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+/* Dynamic Graph / Planner Section Background Backdrop */
+.planner-backdrop-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.planner-bg-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.42;
+    transform: scale(1.03);
+    transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out, transform 1.2s ease-out;
+}
+
+.planner-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 60% 40%, rgba(8, 14, 30, 0.55) 0%, rgba(8, 14, 30, 0.85) 65%, rgba(8, 14, 30, 0.98) 100%);
+}
+
+/* Customer & Admin Portal Dashboard Backdrop */
+.portal-backdrop-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.portal-bg-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.50;
+    transform: scale(1.02);
+    transition: opacity 0.8s ease-in-out, transform 1.2s ease-out;
+}
+
+.portal-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 14, 30, 0.6) 0%, rgba(8, 14, 30, 0.8) 60%, rgba(8, 14, 30, 0.96) 100%);
+}
+
+/* Animated Pulse Route */
+@keyframes dash {
+    to {
+        stroke-dashoffset: -100;
+    }
+}
+
+.route-animated {
+    stroke-dasharray: 8, 8;
+    animation: dash 2.5s linear infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.3); opacity: 0.4; }
+}
+
+.node-pulse {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Boarding Pass Styles */
+.ticket-card {
+    background: #ffffff;
+    color: #080E1E;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.ticket-cutout-left, .ticket-cutout-right {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #080E1E;
+    border-radius: 50%;
+    top: 65%;
+}
+.ticket-cutout-left { left: -12px; }
+.ticket-cutout-right { right: -12px; }
+
+.ticket-dashed-divider {
+    border-top: 2px dashed #cbd5e1;
+}
+
+/* Payment Modals */
+.bkash-header {
+    background: linear-gradient(135deg, #e2136e 0%, #a80b50 100%);
+}
+
+.nagad-header {
+    background: linear-gradient(135deg, #F27405 0%, #D65A00 100%);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #080E1E;
+}
+::-webkit-scrollbar-thumb {
+    background: #1F325E;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #F27405;
+}
+
+/* Print Optimization for Boarding Pass */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printableTicket, #printableTicket * {
+        visibility: visible;
+    }
+    #printableTicket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+    }
+    .no-print {
+        display: none !important;
+    }
+}

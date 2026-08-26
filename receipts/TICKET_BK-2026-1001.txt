@@ -1,0 +1,26 @@
+========================================================================
+                       BANGLADESH TOURISM & TRAVEL                      
+                         OFFICIAL BOARDING PASS                         
+========================================================================
+Booking Reference : BK-2026-1001
+Passenger Name    : Anisur Rahman
+Customer Phone    : +880 1712-345678
+Trip Category     : Custom Route
+Tour Title        : Comilla to Narsingdi
+Route             : Comilla to Narsingdi
+Route Itinerary   : Comilla -> Dhaka -> Narsingdi
+Transport Vehicle : Executive AC Bus
+Total Distance    : 167 KM
+Issue Timestamp   : 2026-08-26 13:52:24
+------------------------------------------------------------------------
+Base Subtotal     : 467.60 BDT
+Discount Applied  : -116.90 BDT (HOLIDAY20)
+Govt VAT (5%)     : 17.54 BDT
+FINAL PAID AMOUNT : 368.23 BDT
+Payment Method    : Cash on Departure
+Transaction ID    : CASH-PAID-ON-DEPARTURE
+Booking Status    : CONFIRMED
+========================================================================
+            Thank you for choosing Bangladesh Travel Management!        
+              For 24/7 Helpline Support, call: +880 1700-000000        
+========================================================================

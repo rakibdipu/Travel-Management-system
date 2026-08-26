@@ -1,0 +1,3 @@
+# User Accounts Database
+ADMIN|admin|admin123|System Administrator|+880 1700-112233|admin@travelbd.gov.bd|Central Operations, Dhaka|0.0|0|
+CUSTOMER|rahman|pass123|Anisur Rahman|+880 1712-345678|rahman@gmail.com|Dhanmondi 27, Dhaka|25000.0|350|

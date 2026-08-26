@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangladesh Tourism & Travel Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            950: '#080E1E',
+                            900: '#0E172F',
+                            800: '#152244',
+                            700: '#1F325E',
+                            blue: '#0284C7',
+                        },
+                        sky: {
+                            cyan: '#06B6D4',
+                            light: '#38BDF8',
+                        },
+                        sunset: {
+                            orange: '#F27405',
+                            coral: '#F25A38',
+                            rose: '#E11D48',
+                        },
+                        gold: {
+                            300: '#FDE047',
+                            400: '#FACC15',
+                            500: '#F2B705',
+                            600: '#D97706',
+                        },
+                        eco: {
+                            green: '#10B981',
+                            emerald: '#059669',
+                            teal: '#0D9488',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-ocean-950 text-slate-100 min-h-screen flex flex-col selection:bg-sunset-orange selection:text-white">
+
+    <!-- ========================================================================= -->
+    <!-- 1. TOP NAVIGATION BAR -->
+    <!-- ========================================================================= -->
+    <header class="sticky top-0 z-40 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <a href="#home" onclick="showView('home')" class="flex items-center gap-3 group">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-ocean-blue via-sky-cyan to-sunset-coral flex items-center justify-center shadow-lg shadow-sky-cyan/25 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-compass text-2xl text-white font-black"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Travel<span class="text-sky-light">BD</span></span>
+                            <span class="text-xs bg-sunset-orange/20 text-sunset-orange border border-sunset-orange/40 px-2 py-0.5 rounded-full font-bold">OOP 2.0</span>
+                        </div>
+                        <p class="text-xs text-sky-light/80 font-medium">Smart Bangladesh Tourism & Routes</p>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center gap-1 bg-ocean-900/90 p-1.5 rounded-full border border-ocean-700/60 shadow-inner">
+                    <button onclick="showView('home')" class="nav-btn px-5 py-2 rounded-full text-sm font-bold text-white hover:text-sky-light hover:bg-ocean-800 transition">
+                        <i class="fa-solid fa-house mr-1.5 text-xs text-sunset-orange"></i>Home
+                    </button>
+                    <button onclick="showView('planner')" class="nav-btn px-5 py-2 rounded-full text-sm font-bold text-slate-300 hover:text-sky-light hover:bg-ocean-800 transition">
+                        <i class="fa-solid fa-route mr-1.5 text-xs text-sky-cyan"></i>Dijkstra Route Map
+                    </button>
+                    <button onclick="showView('packages')" class="nav-btn px-5 py-2 rounded-full text-sm font-bold text-slate-300 hover:text-sky-light hover:bg-ocean-800 transition">
+                        <i class="fa-solid fa-umbrella-beach mr-1.5 text-xs text-sunset-coral"></i>Tour Packages
+                    </button>
+                    <button onclick="showView('customerDashboard')" id="navCustomerLink" class="nav-btn hidden px-5 py-2 rounded-full text-sm font-bold text-slate-300 hover:text-gold-400 hover:bg-ocean-800 transition">
+                        <i class="fa-solid fa-user-circle mr-1.5 text-xs text-gold-400"></i>My Portal
+                    </button>
+                    <button onclick="showView('adminDashboard')" id="navAdminLink" class="nav-btn hidden px-5 py-2 rounded-full text-sm font-bold text-slate-300 hover:text-eco-green hover:bg-ocean-800 transition">
+                        <i class="fa-solid fa-shield-halved mr-1.5 text-xs text-eco-green"></i>Admin Panel
+                    </button>
+                </nav>
+
+                <!-- Auth Buttons & User Status -->
+                <div class="flex items-center gap-3">
+                    <!-- Live Database Indicator -->
+                    <div id="dbStatusBadge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-eco-green/15 text-eco-green border border-eco-green/35 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-eco-green animate-pulse"></span>
+                        <span>SQLite3 Connected</span>
+                    </div>
+
+                    <!-- Wallet Badge (Logged In Customer) -->
+                    <div id="userWalletBadge" class="hidden items-center gap-2 bg-ocean-900 border border-gold-500/40 px-4 py-2 rounded-full cursor-pointer hover:border-gold-400 transition shadow-md shadow-gold-500/10" onclick="openWalletTopUpModal()">
+                        <i class="fa-solid fa-wallet text-gold-400 text-sm"></i>
+                        <span id="navWalletBalance" class="text-sm font-black text-gold-300">0.00 BDT</span>
+                        <span class="text-xs bg-gold-500 text-ocean-950 font-black px-1.5 py-0.2 rounded">+</span>
+                    </div>
+
+                    <!-- Guest Auth Buttons -->
+                    <div id="guestAuthGroup" class="flex items-center gap-2">
+                        <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-bold text-slate-200 hover:text-white bg-ocean-900 hover:bg-ocean-800 border border-ocean-700 rounded-xl transition shadow-sm">
+                            <i class="fa-solid fa-arrow-right-to-bracket mr-1.5 text-sky-light"></i>Log In
+                        </button>
+                        <button onclick="openAuthModal('register')" class="px-4 py-2 text-sm font-bold btn-sunset rounded-xl transition shadow-lg shadow-sunset-orange/20">
+                            Register
+                        </button>
+                    </div>
+
+                    <!-- Logged In User Dropdown -->
+                    <div id="userProfileGroup" class="hidden relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2.5 bg-ocean-900 hover:bg-ocean-800 border border-ocean-700 p-1.5 pr-3 rounded-xl transition shadow-md">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-ocean-blue to-sunset-coral flex items-center justify-center text-white font-black text-sm" id="userAvatarLetter">
+                                U
+                            </div>
+                            <span id="navUserName" class="text-sm font-bold text-white">User</span>
+                            <i class="fa-solid fa-chevron-down text-xs text-sky-light"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-56 glass-panel rounded-2xl p-2 shadow-2xl z-50">
+                            <div class="px-3 py-2 border-b border-ocean-700/60 mb-1">
+                                <p class="text-xs text-sky-light/80">Signed in as</p>
+                                <p class="text-sm font-bold text-white truncate" id="dropdownUserFullname">Full Name</p>
+                                <span id="dropdownUserTier" class="inline-block mt-1 text-[11px] font-bold badge-gold px-2 py-0.5 rounded-md">Silver Tier</span>
+                            </div>
+                            <button onclick="showView('customerDashboard')" class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-ocean-800/80 rounded-xl transition">
+                                <i class="fa-solid fa-gauge text-sky-light"></i>Dashboard
+                            </button>
+                            <button onclick="openWalletTopUpModal()" class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-ocean-800/80 rounded-xl transition">
+                                <i class="fa-solid fa-money-bill-wave text-gold-400"></i>Top-Up Wallet
+                            </button>
+                            <button onclick="openRedeemPointsModal()" class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-ocean-800/80 rounded-xl transition">
+                                <i class="fa-solid fa-coins text-gold-400"></i>Redeem Points
+                            </button>
+                            <div class="border-t border-ocean-700/60 my-1"></div>
+                            <button onclick="handleLogout()" class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 rounded-xl transition font-bold">
+                                <i class="fa-solid fa-right-from-bracket"></i>Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- 2. MAIN APP CONTENT VIEWS -->
+    <!-- ========================================================================= -->
+    <main class="flex-grow">
+
+        <!-- ==================== VIEW: HOME ==================== -->
+        <section id="viewHome" class="view-section">
+            <!-- Hero Header with Dynamic Multi-Picture Background Slider -->
+            <div class="relative overflow-hidden min-h-[640px] lg:min-h-[720px] py-16 lg:py-24 px-4 sm:px-6 lg:px-8 border-b border-ocean-800 flex items-center">
+                <!-- Background Image Slides (Cox's Bazar, Sylhet, Sundarbans, Sajek) -->
+                <div class="hero-bg-container">
+                    <div id="heroSlide0" class="hero-bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=1920&q=85');"></div>
+                    <div id="heroSlide1" class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1608958435020-e8a7109ba809?w=1920&q=85');"></div>
+                    <div id="heroSlide2" class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1920&q=85');"></div>
+                    <div id="heroSlide3" class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=85');"></div>
+                    <div class="hero-overlay"></div>
+                </div>
+
+                <div class="max-w-7xl mx-auto w-full relative z-10">
+                    <!-- Top Badge & Title -->
+                    <div class="text-center max-w-4xl mx-auto">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ocean-900/90 backdrop-blur-md border border-sky-cyan/40 text-sky-light text-sm font-bold mb-6 shadow-xl">
+                            <span class="w-2 h-2 rounded-full bg-sunset-orange animate-ping"></span>
+                            <i class="fa-solid fa-camera text-sunset-orange"></i> Discover The Natural Wonders of Bangladesh
+                        </div>
+                        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight drop-shadow-2xl">
+                            Smart <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-light via-sunset-orange to-gold-400">Tourism & Travel</span> Platform
+                        </h1>
+                        <p class="mt-5 text-base sm:text-xl text-slate-200 font-normal leading-relaxed max-w-3xl mx-auto drop-shadow-md">
+                            Experience the serene blue waters of Cox's Bazar, lush green tea valleys of Sylhet, and mangrove wildlife with intelligent Dijkstra routing and instant digital bookings.
+                        </p>
+
+                        <!-- Quick Action Buttons -->
+                        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+                            <button onclick="showView('planner')" class="px-8 py-4 btn-sunset font-black rounded-2xl shadow-2xl transition-all transform hover:-translate-y-0.5 flex items-center gap-3 text-base">
+                                <i class="fa-solid fa-map-location-dot text-lg"></i>
+                                Plan Custom Route
+                            </button>
+                            <button onclick="showView('packages')" class="px-8 py-4 btn-ocean font-black rounded-2xl transition-all flex items-center gap-3 text-base backdrop-blur-md">
+                                <i class="fa-solid fa-compass text-gold-300"></i>
+                                Browse Packages
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Destination Live Photo Switcher Bar -->
+                    <div class="mt-12 max-w-5xl mx-auto">
+                        <div class="flex items-center justify-between mb-3 px-2">
+                            <span class="text-xs font-bold text-sky-light uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-images text-sunset-orange"></i> Top Scenic Highlights (Click to Switch Backdrop)
+                            </span>
+                            <span class="text-xs text-slate-400 hidden sm:inline-block">Auto-sliding every 5 seconds</span>
+                        </div>
+
+                        <!-- 4 Interactive Photo Cards -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                            <!-- Card 1: Cox's Bazar -->
+                            <div onclick="switchHeroSlide(0)" id="heroThumb0" class="dest-card active-thumb p-3 rounded-2xl glass-panel-dark border-2 border-sunset-orange cursor-pointer overflow-hidden relative group">
+                                <div class="h-20 sm:h-24 rounded-xl overflow-hidden mb-2 relative">
+                                    <img src="https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=600&q=80" alt="Cox's Bazar" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <span class="absolute bottom-1 left-1 bg-ocean-950/90 text-[10px] text-sky-light font-bold px-1.5 py-0.5 rounded">Sea Beach</span>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Cox's Bazar</h4>
+                                <p class="text-[11px] text-slate-300 truncate">World's Longest Beach</p>
+                            </div>
+
+                            <!-- Card 2: Sylhet -->
+                            <div onclick="switchHeroSlide(1)" id="heroThumb1" class="dest-card p-3 rounded-2xl glass-panel-dark border border-ocean-700/80 cursor-pointer overflow-hidden relative group">
+                                <div class="h-20 sm:h-24 rounded-xl overflow-hidden mb-2 relative">
+                                    <img src="https://images.unsplash.com/photo-1608958435020-e8a7109ba809?w=600&q=80" alt="Sylhet" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <span class="absolute bottom-1 left-1 bg-ocean-950/90 text-[10px] text-eco-green font-bold px-1.5 py-0.5 rounded">Tea Gardens</span>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Sylhet</h4>
+                                <p class="text-[11px] text-slate-300 truncate">Ratargul & Green Hills</p>
+                            </div>
+
+                            <!-- Card 3: Sundarbans -->
+                            <div onclick="switchHeroSlide(2)" id="heroThumb2" class="dest-card p-3 rounded-2xl glass-panel-dark border border-ocean-700/80 cursor-pointer overflow-hidden relative group">
+                                <div class="h-20 sm:h-24 rounded-xl overflow-hidden mb-2 relative">
+                                    <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80" alt="Sundarbans" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <span class="absolute bottom-1 left-1 bg-ocean-950/90 text-[10px] text-sunset-orange font-bold px-1.5 py-0.5 rounded">Mangrove</span>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Sundarbans</h4>
+                                <p class="text-[11px] text-slate-300 truncate">Royal Bengal Tiger</p>
+                            </div>
+
+                            <!-- Card 4: Sajek Valley -->
+                            <div onclick="switchHeroSlide(3)" id="heroThumb3" class="dest-card p-3 rounded-2xl glass-panel-dark border border-ocean-700/80 cursor-pointer overflow-hidden relative group">
+                                <div class="h-20 sm:h-24 rounded-xl overflow-hidden mb-2 relative">
+                                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80" alt="Sajek Valley" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                    <span class="absolute bottom-1 left-1 bg-ocean-950/90 text-[10px] text-gold-400 font-bold px-1.5 py-0.5 rounded">Clouds</span>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white truncate">Sajek Valley</h4>
+                                <p class="text-[11px] text-slate-300 truncate">Kingdom of Clouds</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Feature Stats Banner -->
+                    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                        <div class="glass-panel-dark p-4 sm:p-5 rounded-2xl text-center backdrop-blur-md">
+                            <div class="text-2xl sm:text-3xl font-black text-sky-light">21+</div>
+                            <div class="text-[11px] sm:text-xs text-slate-300 uppercase tracking-wider font-bold mt-1">Districts Connected</div>
+                        </div>
+                        <div class="glass-panel-dark p-4 sm:p-5 rounded-2xl text-center backdrop-blur-md">
+                            <div class="text-2xl sm:text-3xl font-black text-gold-400">Dijkstra</div>
+                            <div class="text-[11px] sm:text-xs text-slate-300 uppercase tracking-wider font-bold mt-1">Shortest Path Engine</div>
+                        </div>
+                        <div class="glass-panel-dark p-4 sm:p-5 rounded-2xl text-center backdrop-blur-md">
+                            <div class="text-2xl sm:text-3xl font-black text-sunset-orange">4 Fleet</div>
+                            <div class="text-[11px] sm:text-xs text-slate-300 uppercase tracking-wider font-bold mt-1">Vehicles & Air Modes</div>
+                        </div>
+                        <div class="glass-panel-dark p-4 sm:p-5 rounded-2xl text-center backdrop-blur-md">
+                            <div class="text-2xl sm:text-3xl font-black text-eco-green">Instant</div>
+                            <div class="text-[11px] sm:text-xs text-slate-300 uppercase tracking-wider font-bold mt-1">bKash & Ticket Issuing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Tour Packages Preview -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+                    <div>
+                        <span class="text-sunset-orange font-bold text-sm uppercase tracking-wider">Top Holiday Escapes</span>
+                        <h2 class="text-3xl font-black text-white mt-1">Featured Tour Packages</h2>
+                    </div>
+                    <button onclick="showView('packages')" class="mt-4 md:mt-0 inline-flex items-center gap-2 text-sm font-bold text-sky-light hover:text-sky-cyan transition">
+                        View All Holiday Tours <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div id="homePackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== VIEW: DIJKSTRA ROUTE PLANNER & MAP ==================== -->
+        <section id="viewPlanner" class="view-section hidden relative py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden rounded-3xl my-6 border border-ocean-800 shadow-2xl">
+            <!-- Dynamic Background Backdrop displaying selected destination tourist place photo -->
+            <div class="planner-backdrop-container">
+                <div id="plannerBgImage" class="planner-bg-image" style="background-image: url('https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=1600&q=85');"></div>
+                <div class="planner-overlay-gradient"></div>
+            </div>
+
+            <div class="relative z-10">
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="text-xs font-bold text-sky-light uppercase tracking-widest bg-ocean-900 border border-sky-cyan/40 px-3.5 py-1 rounded-full backdrop-blur-md">
+                        <i class="fa-solid fa-map-location-dot mr-1 text-sunset-orange"></i> Graph Algorithm & Scenic Tourism Visualizer
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 drop-shadow-lg">Interactive Bangladesh Route Planner</h2>
+                    <p class="text-slate-200 mt-2 text-sm sm:text-base drop-shadow">
+                        Select your destination to preview iconic tourist attractions and execute Dijkstra's algorithm for the shortest highway path.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Left: Route Form, Destination Spotlight & Results (5 Cols) -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <!-- Route Selection Box -->
+                        <div class="glass-panel p-6 rounded-3xl border border-ocean-700/60 shadow-2xl backdrop-blur-md">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-location-crosshairs text-sunset-orange"></i> Plan Journey</span>
+                                <span class="text-[11px] text-sky-light bg-ocean-950 px-2.5 py-0.5 rounded-md font-bold border border-ocean-700">Live Highway Network</span>
+                            </h3>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Origin City (Source)</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-circle-dot absolute left-3.5 top-1/2 -translate-y-1/2 text-sunset-orange text-sm"></i>
+                                        <select id="selectOrigin" onchange="onCitySelectionChange()" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-sky-cyan focus:border-transparent outline-none transition font-medium">
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Destination City (Target Spotlight)</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-location-dot absolute left-3.5 top-1/2 -translate-y-1/2 text-gold-400 text-sm"></i>
+                                        <select id="selectDestination" onchange="onCitySelectionChange()" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-gold-400 focus:border-transparent outline-none transition font-medium">
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button onclick="calculateDijkstraRoute()" class="w-full btn-sunset font-black py-3.5 rounded-xl transition shadow-xl flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                                    <i class="fa-solid fa-bolt text-gold-300"></i> Run Shortest Path (Dijkstra)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Destination Tourist Spotlight Preview Card -->
+                        <div id="destTouristSpotlightCard" class="glass-panel rounded-3xl border border-ocean-700/60 overflow-hidden shadow-2xl backdrop-blur-md transition-all duration-500">
+                            <div class="relative h-40 overflow-hidden">
+                                <img id="spotlightCityImage" src="https://images.unsplash.com/photo-1596895111956-bf1cf0599ce5?w=800&q=80" alt="Destination Photo" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-ocean-950 via-ocean-950/40 to-transparent"></div>
+                                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+                                    <div>
+                                        <span class="text-[10px] uppercase font-bold tracking-widest text-sky-light block" id="spotlightRegion">Chittagong Division</span>
+                                        <h4 class="text-xl font-black text-white leading-tight" id="spotlightCityName">Cox's Bazar</h4>
+                                    </div>
+                                    <span class="text-xs badge-gold px-2.5 py-1 rounded-lg font-bold">
+                                        <i class="fa-solid fa-camera mr-1"></i>Tourist Spot
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2.5">
+                                <p class="text-xs text-slate-200 font-medium" id="spotlightTagline">World's Longest Natural Sea Beach (120 KM)</p>
+                                <div>
+                                    <span class="text-[11px] text-slate-400 uppercase font-bold block mb-1.5">Famous Attractions & Sightseeing:</span>
+                                    <div id="spotlightAttractionsPills" class="flex flex-wrap gap-1.5">
+                                        <!-- Attraction tags inserted dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dijkstra Route Result Card -->
+                        <div id="dijkstraResultCard" class="hidden glass-panel p-6 rounded-3xl border border-sky-cyan/40 bg-ocean-900/90 shadow-2xl backdrop-blur-md">
+                            <div class="flex items-center justify-between border-b border-ocean-700/60 pb-3 mb-4">
+                                <div>
+                                    <span class="text-xs text-sky-light font-bold uppercase tracking-wider">Shortest Highway Route</span>
+                                    <h4 class="text-xl font-black text-white" id="resRouteTitle">Dhaka to Cox's Bazar</h4>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-2xl font-black text-gold-400" id="resTotalDistance">389 KM</div>
+                                    <span class="text-[11px] text-slate-400">Total Distance</span>
+                                </div>
+                            </div>
+
+                            <!-- Step by step itinerary sequence -->
+                            <div class="mb-5">
+                                <span class="text-xs text-slate-300 font-bold uppercase tracking-wider block mb-2">Itinerary Waypoints:</span>
+                                <div id="resPathSequence" class="flex flex-wrap items-center gap-2">
+                                    <!-- Reconstructed path pills -->
+                                </div>
+                            </div>
+
+                            <!-- Transport Selection Comparator -->
+                            <div>
+                                <span class="text-xs text-slate-300 font-bold uppercase tracking-wider block mb-3">Select Vehicle Mode & Book:</span>
+                                <div id="resTransportOptions" class="space-y-3">
+                                    <!-- Vehicle options inserted dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Interactive SVG Map Canvas (7 Cols) -->
+                    <div class="lg:col-span-7 glass-panel p-6 rounded-3xl border border-ocean-700/60 shadow-2xl backdrop-blur-md">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-map text-sky-light"></i> Bangladesh Highway Graph Network
+                            </h3>
+                            <span class="text-xs text-slate-300"><i class="fa-solid fa-hand-pointer mr-1"></i>Click node to set route</span>
+                        </div>
+
+                        <div class="relative w-full aspect-[4/5] bg-ocean-950 rounded-2xl border border-ocean-800 overflow-hidden flex items-center justify-center p-2">
+                            <svg id="svgBangladeshMap" viewBox="0 0 800 900" class="w-full h-full">
+                                <!-- Background Highway Connections -->
+                                <g id="svgEdgesLayer"></g>
+                                <!-- Highlighted Dijkstra Route -->
+                                <g id="svgActivePathLayer"></g>
+                                <!-- City Nodes -->
+                                <g id="svgNodesLayer"></g>
+                            </svg>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-between text-xs text-slate-300">
+                            <div class="flex items-center gap-4">
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sunset-orange inline-block"></span> Origin</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-gold-400 inline-block"></span> Target</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-sky-cyan inline-block"></span> Shortest Route</span>
+                            </div>
+                            <span>21 Major Highway Districts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== VIEW: TOUR PACKAGES CATALOG ==================== -->
+        <section id="viewPackages" class="view-section hidden py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+                <div>
+                    <span class="text-xs font-bold text-sky-light uppercase tracking-widest bg-ocean-900 border border-sky-cyan/40 px-3 py-1 rounded-full">
+                        Curated Tour Packages
+                    </span>
+                    <h2 class="text-3xl font-black text-white mt-2">Explore Bangladesh Holiday Tours</h2>
+                </div>
+
+                <!-- Category Filters & Search -->
+                <div class="mt-4 md:mt-0 flex flex-wrap items-center gap-2">
+                    <button onclick="filterPackages('all')" class="pkg-filter-btn px-4 py-1.5 rounded-full text-xs font-bold btn-sunset transition">All</button>
+                    <button onclick="filterPackages('Beach')" class="pkg-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-ocean-900 text-slate-300 hover:text-white border border-ocean-700 transition">Beach</button>
+                    <button onclick="filterPackages('Sylhet')" class="pkg-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-ocean-900 text-slate-300 hover:text-white border border-ocean-700 transition">Tea & Hills</button>
+                    <button onclick="filterPackages('Khulna')" class="pkg-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-ocean-900 text-slate-300 hover:text-white border border-ocean-700 transition">Sundarbans</button>
+                    <button onclick="filterPackages('Heritage')" class="pkg-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-ocean-900 text-slate-300 hover:text-white border border-ocean-700 transition">Heritage</button>
+                </div>
+            </div>
+
+            <!-- Packages Grid -->
+            <div id="catalogPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamically rendered -->
+            </div>
+        </section>
+
+
+        <!-- ==================== VIEW: CUSTOMER DASHBOARD (MY PORTAL) ==================== -->
+        <section id="viewCustomerDashboard" class="view-section hidden relative py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden rounded-3xl my-6 border border-ocean-800 shadow-2xl">
+            <!-- Dynamic Scenic Travel Backdrop Image for Customer Portal (HIGHLY VISIBLE) -->
+            <div class="portal-backdrop-container">
+                <div id="custPortalBg" class="portal-bg-image" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85');"></div>
+                <div class="portal-overlay-gradient"></div>
+            </div>
+
+            <div class="relative z-10 space-y-8">
+                <!-- Customer Profile Header Card -->
+                <div class="glass-panel-dark p-6 sm:p-8 rounded-3xl border border-ocean-700/80 shadow-2xl backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-ocean-blue via-sky-cyan to-sunset-orange flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-sky-cyan/30" id="custProfileAvatar">
+                            R
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-2xl sm:text-3xl font-black text-white" id="custDashboardGreeting">Welcome, User</h2>
+                                <span id="custHeaderTierBadge" class="text-xs badge-gold px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                                    <i class="fa-solid fa-crown mr-1 text-gold-400"></i>Silver Member
+                                </span>
+                            </div>
+                            <p class="text-slate-200 text-xs sm:text-sm mt-1">Manage your travel reservations, wallet funds, and loyalty rewards.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Buttons -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button onclick="openWalletTopUpModal()" class="px-5 py-3 btn-sunset font-black rounded-2xl transition text-sm flex items-center gap-2 shadow-xl shadow-sunset-orange/25">
+                            <i class="fa-solid fa-plus-circle text-base"></i> Top-Up Wallet
+                        </button>
+                        <button onclick="openRedeemPointsModal()" class="px-5 py-3 btn-gold font-black rounded-2xl transition text-sm flex items-center gap-2 shadow-xl shadow-gold-500/25">
+                            <i class="fa-solid fa-gift text-base"></i> Redeem Points
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Overview Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80 shadow-xl backdrop-blur-md relative overflow-hidden group hover:border-gold-400 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Wallet Balance</p>
+                                <h3 class="text-2xl font-black text-gold-400 mt-1" id="custStatWallet">0.00 BDT</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-ocean-900 border border-gold-500/30 flex items-center justify-center text-gold-400 text-xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80 shadow-xl backdrop-blur-md relative overflow-hidden group hover:border-sunset-orange transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Loyalty Points</p>
+                                <h3 class="text-2xl font-black text-sunset-orange mt-1" id="custStatPoints">0 pts</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-ocean-900 border border-sunset-orange/30 flex items-center justify-center text-sunset-orange text-xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80 shadow-xl backdrop-blur-md relative overflow-hidden group hover:border-sky-light transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Membership Tier</p>
+                                <h3 class="text-2xl font-black text-sky-light mt-1" id="custStatTier">Silver</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-ocean-900 border border-sky-cyan/30 flex items-center justify-center text-sky-light text-xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80 shadow-xl backdrop-blur-md relative overflow-hidden group hover:border-eco-green transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Trips Booked</p>
+                                <h3 class="text-2xl font-black text-eco-green mt-1" id="custStatTrips">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-ocean-900 border border-eco-green/30 flex items-center justify-center text-eco-green text-xl group-hover:scale-110 transition">
+                                <i class="fa-solid fa-plane-departure"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Bookings Table -->
+                <div class="glass-panel-dark rounded-3xl border border-ocean-700/80 overflow-hidden shadow-2xl backdrop-blur-md">
+                    <div class="p-6 border-b border-ocean-700/60 flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-ticket text-sunset-orange"></i> My Booking History & Boarding Passes
+                        </h3>
+                        <button onclick="showView('planner')" class="text-xs font-bold text-sky-light hover:text-sky-cyan">
+                            + Plan New Journey
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-200">
+                            <thead class="bg-ocean-950 text-xs uppercase tracking-wider text-slate-400 border-b border-ocean-700/60">
+                                <tr>
+                                    <th class="px-6 py-4">Booking ID</th>
+                                    <th class="px-6 py-4">Tour / Journey</th>
+                                    <th class="px-6 py-4">Vehicle</th>
+                                    <th class="px-6 py-4">Total Fare</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4">Date</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="custBookingsTableBody" class="divide-y divide-ocean-800">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== VIEW: ADMIN CONTROL PANEL ==================== -->
+        <section id="viewAdminDashboard" class="view-section hidden relative py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden rounded-3xl my-6 border border-ocean-800 shadow-2xl">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <span class="text-xs font-bold text-sky-light uppercase tracking-widest badge-sky px-3 py-1 rounded-full">
+                        Central System Operations
+                    </span>
+                    <h2 class="text-3xl font-black text-white mt-2">Administrator Control Panel</h2>
+                </div>
+            </div>
+
+            <!-- Admin Key Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Gross Confirmed Revenue</p>
+                    <h3 class="text-2xl font-black text-gold-400 mt-1" id="admStatRevenue">0.00 BDT</h3>
+                </div>
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Confirmed Bookings</p>
+                    <h3 class="text-2xl font-black text-sky-light mt-1" id="admStatBookings">0</h3>
+                </div>
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Registered Customers</p>
+                    <h3 class="text-2xl font-black text-sunset-orange mt-1" id="admStatUsers">0</h3>
+                </div>
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Discounts Granted</p>
+                    <h3 class="text-2xl font-black text-eco-green mt-1" id="admStatDiscounts">0.00 BDT</h3>
+                </div>
+            </div>
+
+            <!-- Admin Charts & Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+                <div class="lg:col-span-8 glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <h3 class="text-base font-bold text-white mb-4">Destination Popularity & Booking Volume</h3>
+                    <div class="h-64">
+                        <canvas id="chartPopularDestinations"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <h3 class="text-base font-bold text-white mb-4">Active Promo Coupons</h3>
+                    <div id="admCouponList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <button onclick="openAddCouponModal()" class="w-full mt-4 bg-ocean-900 hover:bg-ocean-800 border border-ocean-700 text-sky-light text-xs font-bold py-2.5 rounded-xl transition">
+                        + Add New Promo Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Master Bookings Table -->
+            <div class="glass-panel-dark rounded-3xl border border-ocean-700/80 overflow-hidden shadow-xl mb-10">
+                <div class="p-6 border-b border-ocean-700/60 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-sunset-orange"></i> Central Master Booking Registry
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-200">
+                        <thead class="bg-ocean-950 text-xs uppercase tracking-wider text-slate-400 border-b border-ocean-700/60">
+                            <tr>
+                                <th class="px-6 py-4">Booking ID</th>
+                                <th class="px-6 py-4">Customer</th>
+                                <th class="px-6 py-4">Title / Route</th>
+                                <th class="px-6 py-4">Amount</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Payment Txn</th>
+                                <th class="px-6 py-4 text-right">View Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admBookingsTableBody" class="divide-y divide-ocean-800">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Highway Route & Package Management Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Add Highway Road Connection -->
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-road text-sky-light"></i> Add Highway Connection (Road Edge)
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">From City</label>
+                                <input type="text" id="admNewFrom" placeholder="e.g. Dhaka" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">To City</label>
+                                <input type="text" id="admNewTo" placeholder="e.g. Bogra" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Highway Distance (KM)</label>
+                            <input type="number" id="admNewDist" placeholder="e.g. 195" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                        </div>
+                        <button onclick="handleAdminAddConnection()" class="w-full btn-ocean font-black py-2.5 rounded-xl transition text-sm">
+                            Add Road Connection to Graph
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Tour Package -->
+                <div class="glass-panel-dark p-6 rounded-3xl border border-ocean-700/80">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-sunset-orange"></i> Publish New Tour Package
+                    </h3>
+                    <div class="space-y-3">
+                        <input type="text" id="admPkgName" placeholder="Tour Package Title" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="admPkgDest" placeholder="Destination City" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                            <input type="number" id="admPkgCost" placeholder="Price (BDT)" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                        </div>
+                        <input type="text" id="admPkgHotel" placeholder="Hotel Class (e.g. 5-Star Resort)" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                        <input type="text" id="admPkgInclusions" placeholder="Inclusions (e.g. Meals, Guide, AC Transport)" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm outline-none">
+                        <button onclick="handleAdminAddPackage()" class="w-full btn-sunset font-black py-2.5 rounded-xl transition text-sm">
+                            Publish Tour Package
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- 3. MODALS & POP-UPS -->
+    <!-- ========================================================================= -->
+
+    <!-- Authentication Modal (Login / Register) -->
+    <div id="modalAuth" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-ocean-700 shadow-2xl relative">
+            <button onclick="closeModal('modalAuth')" class="absolute right-5 top-5 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Tab Switcher -->
+            <div class="flex bg-ocean-950 p-1 rounded-2xl mb-6 border border-ocean-700">
+                <button id="tabAuthLogin" onclick="switchAuthTab('login')" class="w-1/2 py-2 text-sm font-black rounded-xl btn-sunset transition">
+                    Sign In
+                </button>
+                <button id="tabAuthRegister" onclick="switchAuthTab('register')" class="w-1/2 py-2 text-sm font-bold text-slate-300 hover:text-white transition">
+                    Register
+                </button>
+            </div>
+
+            <!-- Form: Login -->
+            <form id="formLogin" onsubmit="handleLoginForm(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+                    <input type="text" id="loginUsername" required placeholder="e.g. rahman or admin" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <button type="submit" class="w-full btn-sunset font-black py-3 rounded-xl transition shadow-lg shadow-sunset-orange/20">
+                    Sign In to Portal
+                </button>
+                <div class="text-center">
+                    <span class="text-xs text-slate-400">Demo Accounts: <code class="text-gold-400 font-mono">admin/admin123</code> or <code class="text-gold-400 font-mono">rahman/pass123</code></span>
+                </div>
+            </form>
+
+            <!-- Form: Register -->
+            <form id="formRegister" onsubmit="handleRegisterForm(event)" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Username</label>
+                    <input type="text" id="regUsername" required placeholder="Choose a username" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
+                    <input type="password" id="regPassword" required placeholder="Create password" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Full Name</label>
+                    <input type="text" id="regFullName" required placeholder="Your full name" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Phone</label>
+                        <input type="text" id="regPhone" required placeholder="017xxxxxxxx" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Email</label>
+                        <input type="email" id="regEmail" required placeholder="email@gmail.com" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Residential Address</label>
+                    <input type="text" id="regAddress" required placeholder="e.g. Dhaka, Bangladesh" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-sky-cyan outline-none">
+                </div>
+                <button type="submit" class="w-full btn-sunset font-black py-3 rounded-xl transition shadow-lg shadow-sunset-orange/20">
+                    Create Account (Get 500 BDT Bonus)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Checkout Modal -->
+    <div id="modalCheckout" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md overflow-y-auto">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-ocean-700 shadow-2xl relative my-8">
+            <button onclick="closeModal('modalCheckout')" class="absolute right-5 top-5 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-xl font-black text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-sunset-orange"></i> Reservation Checkout
+            </h3>
+            <p class="text-xs text-slate-300 mb-6">Review pricing, apply coupons, and choose your payment strategy.</p>
+
+            <!-- Order Summary Card -->
+            <div class="bg-ocean-950/90 p-4 rounded-2xl border border-ocean-800 space-y-2 mb-5">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-slate-400 font-medium">Trip / Package:</span>
+                    <span class="text-sm font-black text-white" id="chkTripTitle">Tour Title</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-slate-400 font-medium">Transport / Class:</span>
+                    <span class="text-sm font-bold text-sky-light" id="chkTransportName">AC Bus</span>
+                </div>
+                <div class="flex justify-between items-center border-t border-ocean-800 pt-2">
+                    <span class="text-xs text-slate-400 font-medium">Base Subtotal:</span>
+                    <span class="text-sm font-bold text-white" id="chkBasePrice">0.00 BDT</span>
+                </div>
+                <div class="flex justify-between items-center text-gold-300 text-xs">
+                    <span>Tier Member Discount (<span id="chkTierName">Gold 5%</span>):</span>
+                    <span id="chkTierDiscount">-0.00 BDT</span>
+                </div>
+                <div class="flex justify-between items-center text-sunset-coral text-xs" id="chkCouponDiscountRow">
+                    <span>Coupon Promo Discount:</span>
+                    <span id="chkCouponDiscount">-0.00 BDT</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Govt VAT (5%):</span>
+                    <span id="chkVatAmount">0.00 BDT</span>
+                </div>
+                <div class="flex justify-between items-center border-t border-ocean-700/60 pt-2 text-base font-black text-white">
+                    <span>Final Amount Payable:</span>
+                    <span class="text-gold-400 text-xl font-black" id="chkFinalAmount">0.00 BDT</span>
+                </div>
+            </div>
+
+            <!-- Coupon Code Input -->
+            <div class="mb-5">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Have a Promo Coupon Code?</label>
+                <div class="flex gap-2">
+                    <input type="text" id="chkCouponInput" placeholder="Try OOP100, HOLIDAY20, BANGLADESH" class="flex-grow bg-ocean-950 border border-ocean-700 text-white uppercase font-mono rounded-xl px-4 py-2 text-sm outline-none">
+                    <button onclick="applyCheckoutCoupon()" class="bg-ocean-900 hover:bg-ocean-800 text-gold-300 font-bold px-4 py-2 rounded-xl text-sm border border-ocean-700 transition">
+                        Apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Strategy Options -->
+            <div class="space-y-3 mb-6">
+                <label class="block text-xs font-bold text-slate-300">Select Payment Method (Strategy Pattern):</label>
+                
+                <div class="grid grid-cols-2 gap-2.5">
+                    <!-- bKash -->
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-ocean-950 border border-ocean-800 hover:border-pink-500/50 cursor-pointer transition">
+                        <input type="radio" name="payStrategy" value="BKASH" checked class="text-pink-600 focus:ring-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-[#e2136e] text-white flex items-center justify-center font-black text-xs">b</span>
+                            <span class="text-xs font-bold text-white">bKash</span>
+                        </div>
+                    </label>
+
+                    <!-- Nagad -->
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-ocean-950 border border-ocean-800 hover:border-sunset-orange/50 cursor-pointer transition">
+                        <input type="radio" name="payStrategy" value="NAGAD" class="text-sunset-orange focus:ring-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-[#F27405] text-white flex items-center justify-center font-black text-xs">N</span>
+                            <span class="text-xs font-bold text-white">Nagad</span>
+                        </div>
+                    </label>
+
+                    <!-- Card -->
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-ocean-950 border border-ocean-800 hover:border-sky-light/50 cursor-pointer transition">
+                        <input type="radio" name="payStrategy" value="CARD" class="text-sky-light focus:ring-0">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-credit-card text-sky-light"></i>
+                            <span class="text-xs font-bold text-white">Visa/Master</span>
+                        </div>
+                    </label>
+
+                    <!-- Wallet -->
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-ocean-950 border border-ocean-800 hover:border-gold-400/50 cursor-pointer transition">
+                        <input type="radio" name="payStrategy" value="WALLET" class="text-gold-400 focus:ring-0">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-wallet text-gold-400"></i>
+                            <span class="text-xs font-bold text-white">App Wallet</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <button onclick="executePaymentFlow()" class="w-full btn-sunset font-black py-3.5 rounded-xl transition shadow-xl text-sm uppercase tracking-wider">
+                Proceed to Payment & Confirm
+            </button>
+        </div>
+    </div>
+
+    <!-- Simulated bKash / Nagad Gateway Modal -->
+    <div id="modalGateway" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md">
+        <div class="bg-white text-slate-900 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative">
+            <div id="gatewayHeader" class="bkash-header p-6 text-white text-center relative">
+                <button onclick="closeModal('modalGateway')" class="absolute right-4 top-4 text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <div class="text-2xl font-black tracking-wider uppercase mb-1" id="gatewayTitle">bKash Payment</div>
+                <p class="text-xs text-white/80">Merchant: Bangladesh Tourism Board</p>
+                <div class="text-xl font-black mt-2" id="gatewayAmount">0.00 BDT</div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Your Account Number</label>
+                    <input type="text" id="gatewayPhone" placeholder="017xxxxxxxx" class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-sunset-orange">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Security PIN</label>
+                    <input type="password" id="gatewayPin" maxlength="5" placeholder="•••••" class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-sunset-orange">
+                </div>
+                <button onclick="confirmGatewayPayment()" class="w-full bg-sunset-orange hover:bg-sunset-coral text-white font-black py-3 rounded-xl transition shadow-lg shadow-sunset-orange/30">
+                    Confirm & Authorize
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boarding Pass / Ticket Modal -->
+    <div id="modalTicket" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md overflow-y-auto">
+        <div class="w-full max-w-lg my-8">
+            <div id="printableTicket" class="ticket-card p-6 sm:p-8 relative">
+                <!-- Decorative cutouts for ticket look -->
+                <div class="ticket-cutout-left"></div>
+                <div class="ticket-cutout-right"></div>
+
+                <!-- Ticket Header -->
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+                    <div>
+                        <span class="text-[11px] font-bold tracking-widest text-ocean-blue uppercase">Official Boarding Pass</span>
+                        <h4 class="text-xl font-black text-ocean-950">BANGLADESH TOURISM</h4>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-500 font-mono font-bold" id="tktBookingId">BK-2026-1001</span>
+                        <div class="text-xs font-bold text-eco-green bg-eco-green/10 px-2 py-0.5 rounded-full inline-block mt-0.5">CONFIRMED</div>
+                    </div>
+                </div>
+
+                <!-- Passenger & Journey Details -->
+                <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
+                    <div>
+                        <span class="text-slate-400 uppercase font-bold block">Passenger</span>
+                        <span class="font-black text-ocean-950 text-sm" id="tktPassengerName">Anisur Rahman</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 uppercase font-bold block">Contact Phone</span>
+                        <span class="font-bold text-slate-800" id="tktPhone">+880 1712-345678</span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-slate-400 uppercase font-bold block">Trip Title</span>
+                        <span class="font-black text-ocean-950 text-sm" id="tktTripTitle">Cox's Bazar Beach Holiday</span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-slate-400 uppercase font-bold block">Itinerary Route</span>
+                        <span class="font-bold text-ocean-blue" id="tktRoutePath">Dhaka ===> Cox's Bazar</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 uppercase font-bold block">Vehicle / Class</span>
+                        <span class="font-bold text-slate-800" id="tktTransport">Executive AC Coach</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 uppercase font-bold block">Issued At</span>
+                        <span class="font-bold text-slate-800" id="tktDate">2026-08-26</span>
+                    </div>
+                </div>
+
+                <!-- Dashed Perforation Divider -->
+                <div class="ticket-dashed-divider my-4"></div>
+
+                <!-- Price Breakdown & Barcode -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-400 uppercase font-bold block">Total Fare Paid</span>
+                        <span class="text-xl font-black text-sunset-coral" id="tktTotalFare">7,500 BDT</span>
+                        <span class="text-[11px] text-slate-500 block font-semibold" id="tktPaymentMethod">Via bKash Wallet</span>
+                    </div>
+
+                    <!-- Simulated Barcode -->
+                    <div class="text-center font-mono text-[10px] text-slate-500">
+                        <div class="tracking-[4px] text-lg text-ocean-950 font-bold">||||||||||||||||||||||</div>
+                        <span>AUTH-VALID-TICKET</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons (Print & Close) -->
+            <div class="mt-4 flex gap-3 no-print">
+                <button onclick="window.print()" class="flex-1 btn-sunset font-black py-3 rounded-2xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i> Print / Save as PDF
+                </button>
+                <button onclick="closeModal('modalTicket')" class="px-6 bg-ocean-900 hover:bg-ocean-800 text-white font-bold py-3 rounded-2xl transition border border-ocean-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Top Up Modal -->
+    <div id="modalTopUp" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-ocean-700 shadow-2xl relative">
+            <button onclick="closeModal('modalTopUp')" class="absolute right-5 top-5 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-wallet text-gold-400"></i> Top-Up Travel Wallet
+            </h3>
+            <p class="text-xs text-slate-300 mb-4">Add balance to your internal wallet for instant 1-click booking.</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Recharge Amount (BDT)</label>
+                    <input type="number" id="topUpAmount" placeholder="e.g. 5000" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-4 py-2.5 text-sm font-black text-gold-400 outline-none">
+                </div>
+                <button onclick="handleWalletTopUp()" class="w-full btn-sunset font-black py-3 rounded-xl transition shadow-lg shadow-sunset-orange/20">
+                    Add Funds (Instant)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redeem Loyalty Points Modal -->
+    <div id="modalRedeem" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean-950/85 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-ocean-700 shadow-2xl relative">
+            <button onclick="closeModal('modalRedeem')" class="absolute right-5 top-5 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-gift text-gold-400"></i> Redeem Reward Points
+            </h3>
+            <p class="text-xs text-slate-300 mb-4">Rate: 1 Loyalty Point = 0.50 BDT direct Wallet Credit.</p>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-300 font-semibold">Available Points:</span>
+                    <span class="font-black text-gold-400" id="redeemModalPoints">0 pts</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Points to Redeem</label>
+                    <input type="number" id="redeemPointsInput" placeholder="Min 50 pts" class="w-full bg-ocean-950 border border-ocean-700 text-white rounded-xl px-4 py-2.5 text-sm font-black text-gold-400 outline-none">
+                </div>
+                <button onclick="handleRedeemPoints()" class="w-full btn-gold font-black py-3 rounded-xl transition shadow-lg shadow-gold-500/20">
+                    Convert to Wallet Cash
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. FOOTER -->
+    <!-- ========================================================================= -->
+    <footer class="bg-ocean-950 border-t border-ocean-800 py-10 px-4 sm:px-6 lg:px-8 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-medium">
+            <div class="flex items-center gap-2 text-slate-200">
+                <span>🇧🇩 Bangladesh Tourism & Travel Management System</span>
+                <span>•</span>
+                <span>OOP Course Project CSE 1.2 / 2.1</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Graph Theory (Dijkstra)</span>
+                <span>•</span>
+                <span>Strategy & DAO Patterns</span>
+                <span>•</span>
+                <span>C++ Core & Web SPA</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App JavaScript Modules -->
+    <script src="js/data.js"></script>
+    <script src="js/graph.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
